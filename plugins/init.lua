@@ -1,7 +1,8 @@
 return {
+
   {
   "NoahTheDuke/vim-just",
-  ft = { "just" },
+  ft = { "just", "justfile" },
 },
   {
     "stevearc/conform.nvim",
@@ -15,6 +16,9 @@ return {
         "codelldb",
         "lua-language-server", -- Lua LSP (Autocomplete/Errors)
         "stylua",
+        "bash-language-server",
+        "shellcheck",
+        "shfmt"
       }, -- The Rust/C++ debugger
     },
   },
@@ -163,7 +167,8 @@ return {
         "rust",
         "ron",
         "toml",
-        "just"
+        "just",
+        "bash"
       },
     },
   },
