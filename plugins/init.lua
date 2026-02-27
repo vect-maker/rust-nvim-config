@@ -1,5 +1,9 @@
 return {
   {
+  "NoahTheDuke/vim-just",
+  ft = { "just" },
+},
+  {
     "stevearc/conform.nvim",
     event = "BufWritePre",
     opts = require "configs.conform",
@@ -159,6 +163,7 @@ return {
         "rust",
         "ron",
         "toml",
+        "just"
       },
     },
   },
