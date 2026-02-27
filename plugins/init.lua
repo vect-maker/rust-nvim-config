@@ -1,9 +1,9 @@
 return {
 
   {
-  "NoahTheDuke/vim-just",
-  ft = { "just", "justfile" },
-},
+    "NoahTheDuke/vim-just",
+    ft = { "just", "justfile" },
+  },
   {
     "stevearc/conform.nvim",
     event = "BufWritePre",
@@ -14,12 +14,12 @@ return {
     opts = {
       ensure_installed = {
         "codelldb",
-        "lua-language-server", -- Lua LSP (Autocomplete/Errors)
+        "lua-language-server",
         "stylua",
         "bash-language-server",
         "shellcheck",
-        "shfmt"
-      }, -- The Rust/C++ debugger
+        "shfmt",
+      },
     },
   },
   {
@@ -168,7 +168,10 @@ return {
         "ron",
         "toml",
         "just",
-        "bash"
+        "bash",
+        "vue",
+        "typescript",
+        "javascript",
       },
     },
   },
