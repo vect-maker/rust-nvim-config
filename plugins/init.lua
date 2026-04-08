@@ -1,4 +1,28 @@
+vim.filetype.add {
+  extension = {
+    Containerfile = "dockerfile",
+  },
+  filename = {
+    ["Containerfile"] = "dockerfile",
+  },
+  pattern = {
+
+    [".*%.Containerfile"] = "dockerfile",
+    [".*%.containerfile"] = "dockerfile",
+  },
+}
+
 return {
+  {
+    "nvim-tree/nvim-tree.lua",
+
+    opts = {
+      filesystem_watchers = {
+        enable = true,
+        ignore_dirs = { "data", "target" },
+      },
+    },
+  },
 
   {
     "NoahTheDuke/vim-just",
@@ -172,6 +196,7 @@ return {
         "vue",
         "typescript",
         "javascript",
+        "dockerfile",
       },
     },
   },
