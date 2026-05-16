@@ -92,6 +92,9 @@ return {
             end,
             default_settings = {
               ["rust-analyzer"] = {
+                cargo = {
+                  features = "all",
+                },
                 check = { command = "clippy" },
               },
             },
