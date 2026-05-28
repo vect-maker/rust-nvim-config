@@ -1,4 +1,3 @@
--- Replace your entire init.lua with this corrected configuration
 vim.filetype.add {
   extension = { Containerfile = "dockerfile" },
   filename = { ["Containerfile"] = "dockerfile" },
@@ -29,6 +28,11 @@ return {
   },
   {
     "williamboman/mason.nvim",
+    opts = {},
+  },
+  {
+    "WhoIsSethDaniel/mason-tool-installer.nvim",
+    dependencies = { "williamboman/mason.nvim" },
     opts = {
       ensure_installed = {
         "codelldb",
@@ -38,6 +42,8 @@ return {
         "shellcheck",
         "shfmt",
       },
+      auto_update = false,
+      run_on_start = true,
     },
   },
   {
@@ -48,14 +54,15 @@ return {
   },
   {
     "mrcjkb/rustaceanvim",
-    version = "^8",
-    ft = { "rust" },
+    version = "^9",
+    lazy = false,
     init = function()
       vim.g.rustaceanvim = function()
         local cfg = require "rustaceanvim.config"
         local mason_path = vim.fn.stdpath "data" .. "/mason/packages/codelldb/extension/"
         local codelldb_path = mason_path .. "adapter/codelldb"
-        local liblldb_path = mason_path .. "lldb/lib/liblldb.so"
+        local liblldb_ext = vim.fn.has "mac" == 1 and ".dylib" or ".so"
+        local liblldb_path = mason_path .. "lldb/lib/liblldb" .. liblldb_ext
 
         local ok, blink = pcall(require, "blink.cmp")
         local capabilities = ok and blink.get_lsp_capabilities() or vim.lsp.protocol.make_client_capabilities()
@@ -93,9 +100,28 @@ return {
             default_settings = {
               ["rust-analyzer"] = {
                 cargo = {
-                  features = "all",
+                  allFeatures = true,
+                  loadOutDirsFromCheck = true,
+                  buildScripts = { enable = true },
                 },
+                checkOnSave = true,
                 check = { command = "clippy" },
+                procMacro = { enable = true },
+                files = {
+                  exclude = {
+                    ".direnv",
+                    ".git",
+                    ".jj",
+                    ".github",
+                    ".gitlab",
+                    "bin",
+                    "node_modules",
+                    "target",
+                    "venv",
+                    ".venv",
+                  },
+                  watcher = "client",
+                },
               },
             },
           },
@@ -111,45 +137,50 @@ return {
     opts = {},
     cmd = "Trouble",
     keys = {
-      { "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics (Trouble)" },
-      { "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Buffer Diagnostics (Trouble)" },
-      { "<leader>cs", "<cmd>Trouble symbols toggle focus=false<cr>", desc = "Symbols (Trouble)" },
+      { "<leader>xx", "<cmd>Trouble diagnostics toggle<<cr>", desc = "Diagnostics (Trouble)" },
+      { "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<<cr>", desc = "Buffer Diagnostics (Trouble)" },
+      { "<leader>cs", "<cmd>Trouble symbols toggle focus=false<<cr>", desc = "Symbols (Trouble)" },
       {
         "<leader>cl",
-        "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+        "<cmd>Trouble lsp toggle focus=false win.position=right<<cr>",
         desc = "LSP Definitions / references / ... (Trouble)",
       },
-      { "<leader>xL", "<cmd>Trouble loclist toggle<cr>", desc = "Location List (Trouble)" },
-      { "<leader>xQ", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix List (Trouble)" },
+      { "<leader>xL", "<cmd>Trouble loclist toggle<<cr>", desc = "Location List (Trouble)" },
+      { "<leader>xQ", "<cmd>Trouble qflist toggle<<cr>", desc = "Quickfix List (Trouble)" },
     },
   },
   {
     "mfussenegger/nvim-dap",
+    dependencies = {
+      "rcarriga/nvim-dap-ui",
+      "nvim-neotest/nvim-nio",
+      { "theHamsta/nvim-dap-virtual-text", opts = {} },
+    },
     config = function()
       local dap, dapui = require "dap", require "dapui"
-      dap.listeners.before.attach.dapui_config = function()
+
+      dap.listeners.after.event_initialized["dapui_config"] = function()
         dapui.open()
       end
-      dap.listeners.before.launch.dapui_config = function()
-        dapui.open()
-      end
-      dap.listeners.before.event_terminated.dapui_config = function()
+      dap.listeners.before.event_terminated["dapui_config"] = function()
         dapui.close()
       end
-      dap.listeners.before.event_exited.dapui_config = function()
+      dap.listeners.before.event_exited["dapui_config"] = function()
         dapui.close()
       end
     end,
   },
   {
     "rcarriga/nvim-dap-ui",
-    dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
-    config = function()
-      require("dapui").setup()
+    dependencies = { "nvim-neotest/nvim-nio" },
+    opts = {},
+    config = function(_, opts)
+      require("dapui").setup(opts)
     end,
   },
   {
     "saecki/crates.nvim",
+    tag = "stable",
     event = { "BufRead Cargo.toml" },
     config = function()
       require("crates").setup()
@@ -158,8 +189,10 @@ return {
   { import = "nvchad.blink.lazyspec" },
   {
     "nvim-treesitter/nvim-treesitter",
-    opts = {
-      ensure_installed = {
+    lazy = false,
+    build = ":TSUpdate",
+    config = function()
+      require("nvim-treesitter").install {
         "vim",
         "lua",
         "vimdoc",
@@ -174,8 +207,8 @@ return {
         "typescript",
         "javascript",
         "dockerfile",
-      },
-    },
+      }
+    end,
   },
   {
     "stevearc/aerial.nvim",
