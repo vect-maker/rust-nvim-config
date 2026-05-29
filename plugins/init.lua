@@ -105,22 +105,17 @@ return {
                   buildScripts = { enable = true },
                 },
                 checkOnSave = true,
-                check = { command = "clippy" },
-                procMacro = { enable = true },
-                files = {
-                  exclude = {
-                    ".direnv",
-                    ".git",
-                    ".jj",
-                    ".github",
-                    ".gitlab",
-                    "bin",
-                    "node_modules",
-                    "target",
-                    "venv",
-                    ".venv",
-                  },
-                  watcher = "client",
+                check = {
+                  command = "clippy",
+                  features = "all",
+                },
+                procMacro = {
+                  enable = true,
+                },
+                diagnostics = {
+                  enable = true,
+
+                  experimental = { enable = false },
                 },
               },
             },
